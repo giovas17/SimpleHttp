@@ -1,5 +1,29 @@
 apply plugin: 'com.android.library'
 
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'simple-http'
+
+    publishedGroupId = 'com.softwaremobility.simple-http'
+    libraryName = 'SimpleHttp'
+    artifact = 'simple-http'
+
+    libraryDescription = 'A simple helper to use http REST calls for Android'
+
+    siteUrl = 'https://github.com/giovas17/SimpleHttp'
+    gitUrl = 'https://github.com/giovas17/SimpleHttp.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'darkgeat'
+    developerName = 'Giovani Gonzalez'
+    developerEmail = 'darkgeat@gmail.com'
+
+    licenseName = 'GNU General Public License, version 2 (GPL-2.0)'
+    licenseUrl = 'https://opensource.org/licenses/gpl-2.0.php'
+    allLicenses = ["GPL-2.0"]
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
@@ -23,3 +47,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.4.0'
 }
+
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
