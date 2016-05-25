@@ -4,9 +4,9 @@ ext {
     bintrayRepo = 'maven'
     bintrayName = 'simple-http'
 
-    publishedGroupId = 'com.softwaremobility.simple-http'
+    publishedGroupId = 'com.softwaremobility'
     libraryName = 'SimpleHttp'
-    artifact = 'simple-http'
+    artifact = 'simplehttp'
 
     libraryDescription = 'A simple helper to use http REST calls for Android'
 

@@ -1,12 +1,11 @@
 package com.softwaremobility.network;
 
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
-import com.softwaremobility.simplehttp.BuildConfig;
 import com.softwaremobility.simplehttp.NetworkConnection;
 import com.softwaremobility.utilities.MultiPartUtility;
 import com.softwaremobility.utilities.Utils;
@@ -132,7 +131,7 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
     private HttpURLConnection getStructuredRequest(String endpoint, REQUEST type, @Nullable Map<String,String> params, @Nullable Map<String,String> headers, @Nullable JSONObject object, @Nullable byte [] image) throws Exception{
         HttpURLConnection urlConnection = null;
         URL url = null;
-        boolean isTest = BuildConfig.DEBUG;
+        boolean isTest = ( 0 != ( context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE ) );
         Uri.Builder builderPath = Uri.parse("").buildUpon();
         if (NetworkConnection.getProductionPath() != null && NetworkConnection.getProductionPath().equalsIgnoreCase("")) {
             builderPath = isTest ? Uri.parse(NetworkConnection.getTestPath()).buildUpon() :
