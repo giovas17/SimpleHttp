@@ -1,14 +1,12 @@
 package com.softwaremobility.simplehttp;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
-
 import com.softwaremobility.network.Connection;
-
 import org.json.JSONObject;
-
 import java.util.Map;
 
 /**
@@ -16,6 +14,7 @@ import java.util.Map;
  */
 public class NetworkConnection implements Connection.ConnectionListener{
 
+    @SuppressLint("StaticFieldLeak")
     private static NetworkConnection ourInstance = null;
     private static final String TAG = NetworkConnection.class.getSimpleName();
     private ResponseListener responseListener = null;
@@ -64,10 +63,6 @@ public class NetworkConnection implements Connection.ConnectionListener{
 
     private void setContext(Context context) {
         this.context = context;
-    }
-
-    private ResponseListener getResponseListener() {
-        return responseListener;
     }
 
     private void setResponseListener(ResponseListener responseListener) {

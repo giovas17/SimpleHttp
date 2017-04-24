@@ -133,9 +133,19 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
         URL url = null;
         boolean isTest = ( 0 != ( context.getApplicationInfo().flags &= ApplicationInfo.FLAG_DEBUGGABLE ) );
         Uri.Builder builderPath = Uri.parse("").buildUpon();
-        if (NetworkConnection.getProductionPath() != null && NetworkConnection.getProductionPath().equalsIgnoreCase("")) {
-            builderPath = isTest ? Uri.parse(NetworkConnection.getTestPath()).buildUpon() :
-                    Uri.parse(NetworkConnection.getProductionPath()).buildUpon();
+        if (NetworkConnection.getTestPath() != null && !NetworkConnection.getTestPath().equalsIgnoreCase("")) {
+            if (isTest) {
+                builderPath = Uri.parse(NetworkConnection.getTestPath()).buildUpon();
+            }else {
+                Log.e(LOG_TAG,"No testing url was set");
+            }
+        }
+        if (NetworkConnection.getProductionPath() != null && !NetworkConnection.getProductionPath().equalsIgnoreCase("")) {
+            if (!isTest) {
+                builderPath = Uri.parse(NetworkConnection.getProductionPath()).buildUpon();
+            }else {
+                Log.e(LOG_TAG,"No production url was set");
+            }
         }
         builderPath.appendPath(endpoint);
         String charset = "UTF-8";
@@ -185,6 +195,35 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
                 }
             }
         }else if(type == REQUEST.PUT){ //------------------------ PUT ----------------------------------
+            url = new URL(builderPath.build().toString());
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod(type.name());
+            urlConnection = setHeaders(urlConnection,headers);
+            urlConnection.setDoInput(true);
+            urlConnection.setDoOutput(true);
+            if (object != null){ // A JSON object will be send it.
+                urlConnection.connect();
+                DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
+                dataOutputStream.write(object.toString().getBytes());
+                dataOutputStream.flush();
+                dataOutputStream.close();
+            }else {
+                Uri.Builder builder = new Uri.Builder();
+                if (params != null){
+
+                    for (Map.Entry<String,String> entry : params.entrySet()){
+                        builder.appendQueryParameter(entry.getKey(),entry.getValue());
+                    }
+                    String query = builder.build().getEncodedQuery();
+                    OutputStream os = urlConnection.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, charset));
+                    writer.write(query);
+                    writer.flush();
+                    writer.close();
+                    urlConnection.connect();
+                }
+            }
+        }else if(type == REQUEST.PATCH){ //------------------------ PATCH ----------------------------------
             url = new URL(builderPath.build().toString());
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(type.name());
@@ -282,6 +321,6 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
     }
 
     public enum REQUEST{
-        POST,GET,PUT,DELETE
+        POST,GET,PUT,DELETE,PATCH
     }
 }
