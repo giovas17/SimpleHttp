@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
@@ -38,6 +39,8 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
     private String message;
     private String error;
     private byte [] image;
+    private String charset = "UTF-8";
+    private boolean decodedUrlInUTF = false;
 
     public Connection(Context context, String endpoint, REQUEST requestType, @Nullable Map<String,String> params, @Nullable Map<String,String> headers, @Nullable JSONObject object){
         this.endpoint = endpoint;
@@ -61,6 +64,10 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
 
     public void setListener(ConnectionListener listener) {
         this.listener = listener;
+    }
+
+    public void setDecodedUrlInUTF(boolean decodedUrlInUTF) {
+        this.decodedUrlInUTF = decodedUrlInUTF;
     }
 
     @Override
@@ -148,20 +155,25 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
             }
         }
         builderPath.appendPath(endpoint);
-        String charset = "UTF-8";
         if (type == REQUEST.GET) { //----------------------------- GET ------------------------------------
             if (params != null) {
                 for (Map.Entry<String, String> entry : params.entrySet()) {
-                    builderPath.appendQueryParameter(entry.getKey(), entry.getValue());
+                    if (decodedUrlInUTF){
+                        String decode = entry.getValue();
+                        decode = decode.replace(" ","%20");
+                        builderPath.appendQueryParameter(entry.getKey(), decode);
+                    }else {
+                        builderPath.appendQueryParameter(entry.getKey(), entry.getValue());
+                    }
                 }
             }
-            url = new URL(builderPath.build().toString());
+            url = new URL(getCompletePath(builderPath.build().toString()));
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(type.name());
             urlConnection = setHeaders(urlConnection,headers);
             urlConnection.connect();
         }else if (type == REQUEST.POST){ //------------------------ POST ----------------------------------
-            url = new URL(builderPath.build().toString());
+            url = new URL(getCompletePath(builderPath.build().toString()));
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(type.name());
             urlConnection = setHeaders(urlConnection,headers);
@@ -195,7 +207,7 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
                 }
             }
         }else if(type == REQUEST.PUT){ //------------------------ PUT ----------------------------------
-            url = new URL(builderPath.build().toString());
+            url = new URL(getCompletePath(builderPath.build().toString()));
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(type.name());
             urlConnection = setHeaders(urlConnection,headers);
@@ -224,7 +236,7 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
                 }
             }
         }else if(type == REQUEST.PATCH){ //------------------------ PATCH ----------------------------------
-            url = new URL(builderPath.build().toString());
+            url = new URL(getCompletePath(builderPath.build().toString()));
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(type.name());
             urlConnection = setHeaders(urlConnection,headers);
@@ -253,7 +265,7 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
                 }
             }
         }else if(type == REQUEST.DELETE){ //------------------------ DELETE ----------------------------------
-            url = new URL(builderPath.build().toString());
+            url = new URL(getCompletePath(builderPath.build().toString()));
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(type.name());
             urlConnection = setHeaders(urlConnection,headers);
@@ -269,6 +281,10 @@ public class Connection extends AsyncTask<Void,Void,Boolean>{
         }
         Log.d(LOG_TAG,url.toString());
         return urlConnection;
+    }
+
+    private String getCompletePath(String path) throws UnsupportedEncodingException {
+        return decodedUrlInUTF ? java.net.URLDecoder.decode(path, charset) : path;
     }
 
     private HttpURLConnection setHeaders(HttpURLConnection urlConnection, @Nullable Map<String,String> headers){

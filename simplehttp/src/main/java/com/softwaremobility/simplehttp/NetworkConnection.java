@@ -21,6 +21,7 @@ public class NetworkConnection implements Connection.ConnectionListener{
     private String PRODUCTION_PATH = null;
     private String TEST_PATH = null;
     private Context context;
+    private boolean isDecodedUrl = false;
 
     private NetworkConnection() {}
 
@@ -45,20 +46,23 @@ public class NetworkConnection implements Connection.ConnectionListener{
         return getInstance();
     }
 
+    public static NetworkConnection useDecodedUTFInUrl(boolean value){
+        getInstance().isDecodedUrl = value;
+        return getInstance();
+    }
+
     public void doRequest(Connection.REQUEST method, final Uri uri, @Nullable final Map<String, String> params, @Nullable final Map<String, String> headers, @Nullable JSONObject jsonObject){
         Connection connection = new Connection(context,uri.toString(),method,params,headers,jsonObject);
+        connection.setDecodedUrlInUTF(isDecodedUrl);
         connection.setListener(this);
         connection.execute();
     }
 
     public void doRequest(Connection.REQUEST method, final Uri uri, @Nullable final Map<String, String> params, @Nullable final Map<String, String> headers, @Nullable JSONObject jsonObject, @Nullable byte [] image){
         Connection connection = new Connection(context,uri.toString(),method,params,headers,jsonObject,image);
+        connection.setDecodedUrlInUTF(isDecodedUrl);
         connection.setListener(this);
         connection.execute();
-    }
-
-    private Context getContext() {
-        return context;
     }
 
     private void setContext(Context context) {

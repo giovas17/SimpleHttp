@@ -13,7 +13,7 @@ ext {
     siteUrl = 'https://github.com/giovas17/SimpleHttp'
     gitUrl = 'https://github.com/giovas17/SimpleHttp.git'
 
-    libraryVersion = '1.0.2'
+    libraryVersion = '1.0.4'
 
     developerId = 'darkgeat'
     developerName = 'Giovani Gonzalez'

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="base_url" translatable="false">http://api.themoviedb.org/3</string>
+    <string name="path_movie" translatable="false">movie</string>
+    <string name="param_api_key" translatable="false">api_key</string>
+</resources>
