@@ -17,22 +17,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network_connection);
 
-        NetworkConnection.testPath(getString(R.string.base_url));
+        NetworkConnection.testPath("http://54.190.16.14:3001/api");
 
-        Uri uri = Uri.parse(getString(R.string.path_movie));
-        Map<String, String> params = new HashMap<>();
-        params.put(getString(R.string.param_api_key), getString(R.string.api_key));
+        Uri uri = Uri.parse("airlines");
 
         NetworkConnection.with(this).withListener(new NetworkConnection.ResponseListener() {
             @Override
             public void onSuccessfullyResponse(String response) {
-
+                // code when call is successfully
             }
 
             @Override
             public void onErrorResponse(String error, String message, int code) {
-
+                // code if error happened.
             }
-        }).doRequest(Connection.REQUEST.GET,uri,params,null,null);
+        }).doRequest(Connection.REQUEST.GET,uri,null,null,null);
     }
 }
